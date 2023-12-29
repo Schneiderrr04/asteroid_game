@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+<script>
+var main_object;
+var flying_object=[];
+var flying_object_2=[];
+var gameover=false;
+var textureImg;
+
+function preload()
+{
+  textureImg=loadImage("bg.jpg");
+}
+
+function setup()
+{
+  createCanvas(windowWidth,windowHeight);
+  main_object=new object_1_characteristics();
+  for(var i=0;i<5;i++)
+  {
+    flying_object.push(new object_2_characteristics()); 
+  }
+}
+
+function draw()
+{
+  if (textureImg)
+  {
+    background(textureImg);
+  }
+  else
+  {
+    background(20, 40, 100);
+  }
+  if(!gameover)
+  {
+    for(var i=flying_object_2.length-1;i>=0;i--)
+    {
+      flying_object_2[i].create();
+      flying_object_2[i].current_position();
+      if(flying_object_2[i].margins())
+      {
+        flying_object_2.splice(i,1);
+      }
+      else
+      {
+        for(var j=flying_object.length-1;j>=0;j--)
+        {
+          if(flying_object_2[i].target(flying_object[j]))
+          {
+            if(flying_object[j].size>=40)
+            {
+              var new_flying_object=flying_object[j].breaking();
+              flying_object=flying_object.concat(new_flying_object);
+            }  
+            flying_object.splice(j,1);
+            flying_object_2.splice(i,1);
+            break;
+          }
+        }
+      }
+    }
+    main_object.create();
+    main_object.steering();
+    main_object.current_position();
+    main_object.margins();
+    for(var i=0;i<flying_object.length;i++)
+    {
+      if(main_object.target(flying_object[i]))
+      {
+        gameover=true;
+      }
+      flying_object[i].create();
+      flying_object[i].current_position();
+      flying_object[i].margins();
+    }
+  }
+  else
+  {
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    fill(255);
+    text('Game Over', width / 2, height / 2 - 30);
+    text('Press R to Restart', width / 2, height / 2 + 30);
+  }
+}
+
+function restart()
+{
+  gameover=false;
+  flying_object=[];
+  flying_object_2=[];
+  setup();
+  draw();
+}
+
+function keyReleased()
+{
+  main_object.set_steering_angle(0);
+  main_object.moving(false);
+}
+
+function keyPressed()
+{
+  if(key==' ')
+  {
+    flying_object_2.push(new object_3_characteristics(main_object.position,main_object.direction));
+  }
+  else if(gameover && key=='r')
+  {
+      restart();
+  }
+  else if(keyCode==LEFT_ARROW)
+  {
+    main_object.set_steering_angle(-0.10);
+  }
+  else if(keyCode==RIGHT_ARROW)
+  {
+    main_object.set_steering_angle(0.10);
+  }
+  else if(keyCode==UP_ARROW)
+  {
+    main_object.moving(true);
+  }
+}
+
+function object_1_characteristics()
+{
+  this.position=createVector(width/2,height/2);
+  this.size=50;
+  this.direction=0;
+  this.steering_angle=0;
+  this.velocity=createVector(0,0);
+  this.is_moving=false;
+  this.moving=function(bool)
+  {
+    this.is_moving=bool;
+  }
+  this.current_position=function()
+  {
+    if(this.is_moving)
+    {
+      this.move_power();
+    }
+    this.position.add(this.velocity);
+    this.velocity.mult(0.995);
+  }
+  this.move_power=function()
+  {
+    var force=p5.Vector.fromAngle(this.direction);
+    force.mult(0.2);
+    this.velocity.add(force);
+  }
+  this.target=function(target_object)
+  {
+    var distance=dist(this.position.x,this.position.y,target_object.position.x,target_object.position.y);               if(distance<target_object.size+this.size)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  this.create=function()
+  {
+    push();
+    fill(34,3,1);
+    stroke(34,799,77);
+    translate(this.position.x,this.position.y);
+    rotate(this.direction+PI/2);
+    triangle(-this.size,this.size,this.size,this.size,0,-this.size);
+    pop();
+  }
+  this.margins=function()
+  {
+    if(this.position.y>height+this.size)
+    {
+      this.position.y=-this.size;
+    }
+    else if(this.position.y<-this.size)
+    {
+      this.position.y=height+this.size;
+    }
+    if(this.position.x>width+this.size)
+    {
+      this.position.x=-this.size;
+    }
+    else if(this.position.x<-this.size)
+    {
+      this.position.x=width+this.size;
+    } 
+  }
+  this.set_steering_angle=function(angle)
+  {
+    this.steering_angle=angle;
+  }
+  this.steering=function()
+  {
+    this.direction+=this.steering_angle;
+  }
+}
+
+function object_3_characteristics(initial_position,initial_direction)
+{
+  this.position=createVector(initial_position.x,initial_position.y);
+  this.size=50;
+  this.velocity=p5.Vector.fromAngle(initial_direction);
+  this.velocity.mult(15);
+  this.current_position=function()
+  {
+    this.position.add(this.velocity);
+  }
+  this.create=function()
+  {
+    push();
+    strokeWeight(10);
+    stroke(34,799,77);
+    point(this.position.x,this.position.y);
+    pop();
+  }
+  this.target=function(target_object)
+  {
+    var distance=dist(this.position.x,this.position.y,target_object.position.x,target_object.position.y);               if(distance<target_object.size)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  this.margins=function()
+  {
+    if(this.position.y>height || this.position.y<0 || this.position.x>width || this.position.x<0)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }  
+  }
+}
+
+function object_2_characteristics(position,size)
+{
+  if(position)
+  {
+    this.position=position.copy();
+  }
+  else
+  {
+    this.position=createVector(random(width),random(height));
+  }
+  if(size)
+  {
+    this.size=size*0.4;
+  }
+  else
+  {
+    this.size=random(20,100);
+  }
+  this.vertex_nr=floor(random(8,20));
+  this.vertex_difference=[];
+  this.velocity=p5.Vector.random2D();
+  this.velocity.mult(random(0.5,20));
+  for(var i=0;i<this.vertex_nr;i++)
+  {
+     this.vertex_difference[i]=random(-this.size*0.35,this.size*0.35);
+  }
+  this.current_position=function()
+  {
+    this.position.add(this.velocity);
+  }
+  this.margins=function()
+  {
+    if(this.position.y>height+this.size)
+    {
+      this.position.y=-this.size;
+    }
+    else if(this.position.y<-this.size)
+    {
+      this.position.y=height+this.size;
+    }
+    if(this.position.x>width+this.size)
+    {
+      this.position.x=-this.size;
+    }
+    else if(this.position.x<-this.size)
+    {
+      this.position.x=width+this.size;
+    } 
+  }
+  this.create=function()
+  {
+    push();
+    fill(56,78,14);
+    stroke(34,799,77);
+    translate(this.position.x,this.position.y);
+    beginShape();
+    for(var i=0;i<this.vertex_nr;i++)
+    {
+      var angle=map(i,0,this.vertex_nr,0,TWO_PI);
+      var x=(this.size+this.vertex_difference[i])*cos(angle);
+      var y=(this.size+this.vertex_difference[i])*sin(angle);
+      vertex(x,y);
+    }
+    endShape(CLOSE);
+    pop();
+  }
+  this.breaking=function()
+  {
+    var new_object=[];
+    new_object[0]=new object_2_characteristics(this.position,this.size);
+    new_object[1]=new object_2_characteristics(this.position,this.size);
+    return new_object;
+  }
+}
+
+
+</script>
+</body>
+</html>
