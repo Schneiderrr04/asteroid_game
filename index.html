@@ -11,11 +11,13 @@ var main_object;
 var flying_object=[];
 var flying_object_2=[];
 var gameover=false;
-var textureImg;
-
+var textureImg_bg;
+var textureImg_flying_object;
+	
 function preload()
 {
-  textureImg=loadImage("bg.jpg");
+  textureImg_bg=loadImage('bg.jpg');
+	textureImg_flying_object=loadImage('surface.jpg');
 }
 
 function setup()
@@ -30,9 +32,9 @@ function setup()
 
 function draw()
 {
-  if (textureImg)
+  if (textureImg_bg)
   {
-    background(textureImg);
+    background(textureImg_bg);
   }
   else
   {
