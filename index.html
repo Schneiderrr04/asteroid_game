@@ -4,6 +4,13 @@
 	<meta charset="utf-8">
 	<title></title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+	<style>
+	body 
+	{
+		margin:0;
+		overflow:hidden;
+	}
+	</style>
 </head>
 <body>
 <script>
@@ -11,11 +18,14 @@ var main_object;
 var flying_object=[];
 var flying_object_2=[];
 var gameover=false;
-var textureImg_bg;
+var textureImg;
+var margin_distance_width=50;
+var margin_distance_height=5;
+var random_position;
 
 function preload()
 {
-  textureImg_bg=loadImage('https://raw.githubusercontent.com/Schneiderrr04/asteroid_game/main/bg.jpg');
+  textureImg =loadImage("https://raw.githubusercontent.com/Schneiderrr04/test/main/bg.jpg");
 }
 
 function setup()
@@ -24,15 +34,31 @@ function setup()
   main_object=new object_1_characteristics();
   for(var i=0;i<5;i++)
   {
-    flying_object.push(new object_2_characteristics());
+    if(i%4==0)
+    {
+      random_position=createVector(random(width),random(0,margin_distance_height));
+    }
+    else if(i%4==1)
+    {
+      random_position=createVector(random(width),random(height-margin_distance_height,height));
+    }
+    else if(i%4==2)
+    {
+      random_position=createVector(random(0,margin_distance_width),random(height));
+    }
+    else if(i%4==3)
+    {
+      random_position=createVector(random(width-margin_distance_width,width),random(height));
+    }
+    flying_object.push(new object_2_characteristics(random_position));
   }
 }
 
 function draw()
 {
-  if (textureImg_bg)
+  if (textureImg)
   {
-    background(textureImg_bg);
+    background(textureImg);
   }
   else
   {
@@ -104,6 +130,8 @@ function keyReleased()
 {
   main_object.set_steering_angle(0);
   main_object.moving(false);
+  main_object.moving_bw(false);
+  
 }
 
 function keyPressed()
@@ -128,6 +156,10 @@ function keyPressed()
   {
     main_object.moving(true);
   }
+  else if(keyCode==DOWN_ARROW)
+  {
+    main_object.moving_bw(true);
+  }
 }
 
 function object_1_characteristics()
@@ -138,15 +170,24 @@ function object_1_characteristics()
   this.steering_angle=0;
   this.velocity=createVector(0,0);
   this.is_moving=false;
+  this.is_moving_bw=false;
   this.moving=function(bool)
   {
     this.is_moving=bool;
+  }
+  this.moving_bw=function(bool)
+  {
+    this.is_moving_bw=bool;
   }
   this.current_position=function()
   {
     if(this.is_moving)
     {
       this.move_power();
+    }
+    if(this.is_moving_bw)
+    {
+      this.move_power_bw();
     }
     this.position.add(this.velocity);
     this.velocity.mult(0.995);
@@ -156,6 +197,12 @@ function object_1_characteristics()
     var force=p5.Vector.fromAngle(this.direction);
     force.mult(0.2);
     this.velocity.add(force);
+  }
+  this.move_power_bw=function()
+  {
+    var force=p5.Vector.fromAngle(this.direction);
+    force.mult(0.2);
+    this.velocity.sub(force);
   }
   this.target=function(target_object)
   {
@@ -270,7 +317,7 @@ function object_2_characteristics(position,size)
   this.vertex_nr=floor(random(8,20));
   this.vertex_difference=[];
   this.velocity=p5.Vector.random2D();
-  this.velocity.mult(random(0.5,20));
+  this.velocity.mult(random(0.5,10));
   for(var i=0;i<this.vertex_nr;i++)
   {
      this.vertex_difference[i]=random(-this.size*0.35,this.size*0.35);
@@ -301,7 +348,7 @@ function object_2_characteristics(position,size)
   this.create=function()
   {
     push();
-	fill(20, 54, 100);
+    fill(31,20,2);
     stroke(34,799,77);
     translate(this.position.x,this.position.y);
     beginShape();
@@ -323,7 +370,6 @@ function object_2_characteristics(position,size)
     return new_object;
   }
 }
-
 
 </script>
 </body>
