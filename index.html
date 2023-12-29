@@ -26,7 +26,7 @@ function setup()
   main_object=new object_1_characteristics();
   for(var i=0;i<5;i++)
   {
-    flying_object.push(new object_2_characteristics()); 
+    flying_object.push(new object_2_characteristics());
   }
 }
 
@@ -251,9 +251,9 @@ function object_3_characteristics(initial_position,initial_direction)
   }
 }
 
-function object_2_characteristics(position,size)
+function object_2_characteristics(position,size,texture)
 {
-  if(position)
+	if(position)
   {
     this.position=position.copy();
   }
@@ -303,7 +303,14 @@ function object_2_characteristics(position,size)
   this.create=function()
   {
     push();
-    fill(56,78,14);
+    if (textureImg_flying_object)
+  	{
+    	texture(textureImg_flying_object);
+	  }
+	  else
+	  {
+	    fill(56,78,14);
+	  }
     stroke(34,799,77);
     translate(this.position.x,this.position.y);
     beginShape();
