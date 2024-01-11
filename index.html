@@ -18,21 +18,33 @@ var main_object;
 var flying_object=[];
 var flying_object_2=[];
 var gameover=false;
+var gamewin=false;
+var inmenu=true;
+var insettings=false;
 var textureImg;
 var margin_distance_width=50;
 var margin_distance_height=5;
 var random_position;
+var asteroid_number=5
+var steering_sensibility=5;
+var speed=5;
+var sliders=[];
+var activeslider=-1;
+var startTime;
+var elapsedTime;
+var seconds;
+var minutes;
 
 function preload()
 {
-  textureImg =loadImage("https://raw.githubusercontent.com/Schneiderrr04/test/main/bg.jpg");
+  textureImg =loadImage("bg.jpg");
 }
 
 function setup()
 {
   createCanvas(windowWidth,windowHeight);
   main_object=new object_1_characteristics();
-  for(var i=0;i<5;i++)
+  for(var i=0;i<asteroid_number;i++)
   {
     if(i%4==0)
     {
@@ -52,6 +64,9 @@ function setup()
     }
     flying_object.push(new object_2_characteristics(random_position));
   }
+  sliders.push({ x: width / 2, y: height / 2-50 });
+  sliders.push({ x: width / 2, y: height / 2 +50 });
+  sliders.push({ x: width / 2, y: height / 2 + 150 });
 }
 
 function draw()
@@ -64,8 +79,42 @@ function draw()
   {
     background(20, 40, 100);
   }
-  if(!gameover)
+  if(inmenu)
   {
+	textSize(65);
+	textAlign(CENTER, CENTER);
+	fill(255);
+	text('DESTROY THE ASTEROIDS AND SURVIVE!', width / 2, height / 2 -250);
+	textSize(40)
+	text('Start (press S)', width / 2, height / 2 -150);
+	text('Game settings (press G)', width/2, height/2-80);
+	text('Game controls:', width/2, height/2-10);
+	textSize(32)
+	text('Move forward (up arrow)', width/2, height/2+40);
+	text('Move backward (down arrow)', width/2, height/2+90);
+	text('Rotate left (left arrow)', width/2, height/2+140);
+	text('Rotate right (right arrow)', width/2, height/2+190);
+	text('Shoot laser (space)', width/2, height/2+240);
+  }
+  else if(insettings)
+  {
+	textSize(50);
+	textAlign(CENTER, CENTER);
+	fill(255);
+	text('Settings:',width/2,height/2-220);
+    text('Initial asteroids:'+asteroid_number,width/2,height/2-100);
+    text('Steering sensibility:'+steering_sensibility, width/2, height / 2);
+    text('Spaceship speed:'+speed,width/2,height / 2 +100);
+	text('Back (press B)', width /2, height / 2 +250);
+	fill(255, 0, 0);
+    drawSlider(sliders[0]);
+    drawSlider(sliders[1]);
+    drawSlider(sliders[2]);
+  }
+  else
+  {
+	if(!gameover && !gamewin)
+	{
     for(var i=flying_object_2.length-1;i>=0;i--)
     {
       flying_object_2[i].create();
@@ -106,24 +155,71 @@ function draw()
       flying_object[i].current_position();
       flying_object[i].margins();
     }
-  }
-  else
-  {
-    textSize(32);
-    textAlign(CENTER, CENTER);
-    fill(255);
-    text('Game Over', width / 2, height / 2 - 30);
-    text('Press R to Restart', width / 2, height / 2 + 30);
-  }
+	if(flying_object.length==0)
+	{
+		gamewin=true;
+		elapsedTime=millis()-startTime;
+        seconds=Math.floor(elapsedTime/1000);
+        minutes=Math.floor(seconds/60);
+        seconds%=60;
+	}
+	}
+	else if(gameover)
+	{
+	textSize(80);
+	textAlign(CENTER, CENTER);
+	fill(255);
+	text('GAME OVER', width / 2, height / 2 -200);
+	textSize(40)
+	text('Restart (press R)', width / 2, height / 2 -50);
+	text('Menu (press M)', width/2, height/2+50);
+	}
+	else if(gamewin)
+	{
+		textSize(65);
+		textAlign(CENTER, CENTER);
+		fill(255);
+		text('Congratulations! You won the game!', width / 2, height / 2 -200);
+		textSize(40);
+        text('Your time: ' + nf(minutes, 2) + ':' + nf(seconds, 2), width / 2, height/2 -120);
+		text('Restart (press R)', width / 2, height / 2);
+		text('Menu (press M)', width / 2, height / 2+100);
+	}
+  } 
 }
 
-function restart()
+function start()
 {
   gameover=false;
+  inmenu=false;
+  gamewin=false;
+  flying_object=[];
+  flying_object_2=[];
+  startTime=millis();
+  setup();
+  draw();
+}
+
+function menu()
+{
+  inmenu=true;
+  gameover=false;
+  insettings=false;
+  gamewin=false;
   flying_object=[];
   flying_object_2=[];
   setup();
   draw();
+}
+
+function gamesettings()
+{
+	inmenu=false;
+	insettings=true;
+	flying_object=[];
+	flying_object_2=[];
+	setup();
+	draw();
 }
 
 function keyReleased()
@@ -134,38 +230,122 @@ function keyReleased()
   
 }
 
+function mousePressed() 
+{
+    for (let i = 0; i < sliders.length; i++)
+	{
+        let d=dist(mouseX, mouseY, sliders[i].x, sliders[i].y);
+        if(d<20)
+		{
+          activeSlider = i;
+        }
+      }
+    }
+    function mouseReleased()
+	{
+      activeSlider = -1;
+    }
+    function mouseDragged()
+	{
+      if (activeSlider!=-1)
+	  {
+        sliders[activeSlider].x = constrain(mouseX, 170, width - 170);
+        if (activeSlider==0)
+		{
+          asteroid_number = int(map(sliders[activeSlider].x, 170, width - 170, 1, 10));
+        }else if (activeSlider==1)
+		{
+          steering_sensibility = int(map(sliders[activeSlider].x, 170, width - 170, 1, 10));
+        }else if (activeSlider== 2)
+		{
+          speed = int(map(sliders[activeSlider].x, 170, width -170, 1, 10));
+        }
+      }
+    }
+    function drawSlider(slider)
+	{
+      stroke(255);
+      strokeWeight(2);
+      line(170, slider.y, width - 170, slider.y);
+      fill(255);
+      ellipse(170, slider.y, 10, 10);
+      ellipse(width - 170, slider.y, 10, 10);
+      fill(255, 0, 0);
+      ellipse(slider.x, slider.y, 20, 20);
+    }
+	
+	
 function keyPressed()
 {
-  if(key==' ')
-  {
-    flying_object_2.push(new object_3_characteristics(main_object.position,main_object.direction));
+	if(gameover)
+	{
+	if(key=='r')
+	{
+      start();
+	}
+	if(key=='m')
+	{	
+		menu();
+	}
   }
-  else if(gameover && key=='r')
+  else if(inmenu)
   {
-      restart();
-  }
-  else if(keyCode==LEFT_ARROW)
+	if(key=='s')
+	{	
+		start();
+	}
+	else if(key=='g')
+	{
+		gamesettings();
+	}
+}
+  else if(gamewin)
   {
-    main_object.set_steering_angle(-0.10);
+	if(key=='r')
+	{
+      start();
+	}
+	if(key=='m')
+	{	
+		menu();
+	}
   }
-  else if(keyCode==RIGHT_ARROW)
+  else if(insettings)
   {
-    main_object.set_steering_angle(0.10);
+	if(key=='b')
+	{
+		menu();
+	}
   }
-  else if(keyCode==UP_ARROW)
+  else
   {
-    main_object.moving(true);
-  }
-  else if(keyCode==DOWN_ARROW)
-  {
-    main_object.moving_bw(true);
-  }
+	 if(key==' ')
+	{
+		flying_object_2.push(new object_3_characteristics(main_object.position,main_object.direction));
+	}
+	if(keyCode==LEFT_ARROW)
+	{
+		main_object.set_steering_angle(-steering_sensibility/50);
+	}
+	if(keyCode==RIGHT_ARROW)
+	{
+		main_object.set_steering_angle(steering_sensibility/50);
+	}
+	if(keyCode==UP_ARROW)
+	{
+		main_object.moving(true);
+	}
+	if(keyCode==DOWN_ARROW)
+	{
+		main_object.moving_bw(true);
+	}
+	}
 }
 
 function object_1_characteristics()
 {
   this.position=createVector(width/2,height/2);
-  this.size=50;
+  this.size=35;
   this.direction=0;
   this.steering_angle=0;
   this.velocity=createVector(0,0);
@@ -195,13 +375,13 @@ function object_1_characteristics()
   this.move_power=function()
   {
     var force=p5.Vector.fromAngle(this.direction);
-    force.mult(0.2);
+    force.mult(speed/25);
     this.velocity.add(force);
   }
   this.move_power_bw=function()
   {
     var force=p5.Vector.fromAngle(this.direction);
-    force.mult(0.2);
+    force.mult(speed/25);
     this.velocity.sub(force);
   }
   this.target=function(target_object)
@@ -218,7 +398,7 @@ function object_1_characteristics()
   this.create=function()
   {
     push();
-    fill(34,3,1);
+    fill(13,253,13);
     stroke(34,799,77);
     translate(this.position.x,this.position.y);
     rotate(this.direction+PI/2);
