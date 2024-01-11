@@ -37,7 +37,7 @@ var minutes;
 
 function preload()
 {
-  textureImg =loadImage("bg.jpg");
+  textureImg =loadImage("https://raw.githubusercontent.com/Schneiderrr04/test/main/bg.jpg");
 }
 
 function setup()
@@ -101,11 +101,11 @@ function draw()
 	textSize(50);
 	textAlign(CENTER, CENTER);
 	fill(255);
-	text('Settings:',width/2,height/2-220);
+	text('Settings:',width/2,height/2-250);
     text('Initial asteroids:'+asteroid_number,width/2,height/2-100);
     text('Steering sensibility:'+steering_sensibility, width/2, height / 2);
     text('Spaceship speed:'+speed,width/2,height / 2 +100);
-	text('Back (press B)', width /2, height / 2 +250);
+	text('Back to menu (press B)', width /2, height / 2 +250);
 	fill(255, 0, 0);
     drawSlider(sliders[0]);
     drawSlider(sliders[1]);
@@ -181,7 +181,7 @@ function draw()
 		fill(255);
 		text('Congratulations! You won the game!', width / 2, height / 2 -200);
 		textSize(40);
-        text('Your time: ' + nf(minutes, 2) + ':' + nf(seconds, 2), width / 2, height/2 -105);
+        text('Your time: ' + nf(minutes, 2) + ':' + nf(seconds, 2), width / 2, height/2 -120);
 		text('Restart (press R)', width / 2, height / 2);
 		text('Menu (press M)', width / 2, height / 2+100);
 	}
