@@ -29,7 +29,7 @@ var asteroid_number=5
 var steering_sensibility=5;
 var speed=5;
 var sliders=[];
-var activeslider=-1;
+var activeslider;
 var startTime;
 var elapsedTime;
 var seconds;
@@ -37,7 +37,7 @@ var minutes;
 
 function preload()
 {
-  textureImg =loadImage("https://raw.githubusercontent.com/Schneiderrr04/test/main/bg.jpg");
+  textureImg=loadImage("bg.jpg");
 }
 
 function setup()
@@ -64,9 +64,10 @@ function setup()
     }
     flying_object.push(new object_2_characteristics(random_position));
   }
-  sliders.push({ x: width / 2, y: height / 2-50 });
-  sliders.push({ x: width / 2, y: height / 2 +50 });
-  sliders.push({ x: width / 2, y: height / 2 + 150 });
+  sliders.push({x:width/2,y:height/2-50});
+  sliders.push({x:width/2,y:height/2+50});
+  sliders.push({x:width/2,y:height/2+150});
+  activeslider=-1; 
 }
 
 function draw()
@@ -77,115 +78,115 @@ function draw()
   }
   else
   {
-    background(20, 40, 100);
+    background(20,40,100);
   }
   if(inmenu)
   {
 	textSize(65);
-	textAlign(CENTER, CENTER);
+	textAlign(CENTER,CENTER);
 	fill(255);
 	text('DESTROY THE ASTEROIDS AND SURVIVE!', width / 2, height / 2 -250);
-	textSize(40)
-	text('Start (press S)', width / 2, height / 2 -150);
-	text('Game settings (press G)', width/2, height/2-80);
-	text('Game controls:', width/2, height/2-10);
-	textSize(32)
-	text('Move forward (up arrow)', width/2, height/2+40);
-	text('Move backward (down arrow)', width/2, height/2+90);
-	text('Rotate left (left arrow)', width/2, height/2+140);
-	text('Rotate right (right arrow)', width/2, height/2+190);
-	text('Shoot laser (space)', width/2, height/2+240);
+	textSize(40);
+	text('Start (press S)',width/2,height/2-150);
+	text('Game settings (press G)',width/2,height/2-80);
+	text('Game controls:',width/2,height/2-10);
+	textSize(32);
+	text('Move forward (up arrow)',width/2,height/2+40);
+	text('Move backward (down arrow)',width/2,height/2+90);
+	text('Rotate left (left arrow)',width/2,height/2+140);
+	text('Rotate right (right arrow)',width/2,height/2+190);
+	text('Shoot laser (space)',width/2,height/2+240);
   }
   else if(insettings)
   {
 	textSize(50);
-	textAlign(CENTER, CENTER);
+	textAlign(CENTER,CENTER);
 	fill(255);
 	text('Settings:',width/2,height/2-250);
-    text('Initial asteroids:'+asteroid_number,width/2,height/2-100);
-    text('Steering sensibility:'+steering_sensibility, width/2, height / 2);
-    text('Spaceship speed:'+speed,width/2,height / 2 +100);
-	text('Back to menu (press B)', width /2, height / 2 +250);
-	fill(255, 0, 0);
-    drawSlider(sliders[0]);
-    drawSlider(sliders[1]);
-    drawSlider(sliders[2]);
+    	text('Initial asteroids:'+asteroid_number,width/2,height/2-100);
+    	text('Steering sensibility:'+steering_sensibility,width/2,height/2);
+    	text('Spaceship speed:'+speed,width/2,height/2+100);
+	text('Back to menu (press B)',width/2,height/2+250);
+	fill(255,0,0);
+    	drawSlider(sliders[0]);
+    	drawSlider(sliders[1]);
+    	drawSlider(sliders[2]);
   }
   else
   {
 	if(!gameover && !gamewin)
 	{
-    for(var i=flying_object_2.length-1;i>=0;i--)
-    {
-      flying_object_2[i].create();
-      flying_object_2[i].current_position();
-      if(flying_object_2[i].margins())
-      {
-        flying_object_2.splice(i,1);
-      }
-      else
-      {
-        for(var j=flying_object.length-1;j>=0;j--)
-        {
-          if(flying_object_2[i].target(flying_object[j]))
-          {
-            if(flying_object[j].size>=40)
-            {
-              var new_flying_object=flying_object[j].breaking();
-              flying_object=flying_object.concat(new_flying_object);
-            }  
-            flying_object.splice(j,1);
-            flying_object_2.splice(i,1);
-            break;
-          }
-        }
-      }
-    }
-    main_object.create();
-    main_object.steering();
-    main_object.current_position();
-    main_object.margins();
-    for(var i=0;i<flying_object.length;i++)
-    {
-      if(main_object.target(flying_object[i]))
-      {
-        gameover=true;
-      }
-      flying_object[i].create();
-      flying_object[i].current_position();
-      flying_object[i].margins();
-    }
-	if(flying_object.length==0)
-	{
-		gamewin=true;
-		elapsedTime=millis()-startTime;
-        seconds=Math.floor(elapsedTime/1000);
-        minutes=Math.floor(seconds/60);
-        seconds%=60;
-	}
+	    for(var i=flying_object_2.length-1;i>=0;i--)
+	    {
+	      flying_object_2[i].create();
+	      flying_object_2[i].current_position();
+	      if(flying_object_2[i].margins())
+	      {
+	        flying_object_2.splice(i,1);
+	      }
+	      else
+	      {
+	        for(var j=flying_object.length-1;j>=0;j--)
+	        {
+	          if(flying_object_2[i].target(flying_object[j]))
+	          {
+	            if(flying_object[j].size>=40)
+	            {
+	              var new_flying_object=flying_object[j].breaking();
+	              flying_object=flying_object.concat(new_flying_object);
+	            }  
+	            flying_object.splice(j,1);
+	            flying_object_2.splice(i,1);
+	            break;
+	          }
+	        }
+	      }
+	    }
+	    main_object.create();
+	    main_object.steering();
+	    main_object.current_position();
+	    main_object.margins();
+	    for(var i=0;i<flying_object.length;i++)
+	    {
+	      if(main_object.target(flying_object[i]))
+	      {
+	        gameover=true;
+	      }
+	      flying_object[i].create();
+	      flying_object[i].current_position();
+	      flying_object[i].margins();
+	    }
+		if(flying_object.length==0)
+		{
+			gamewin=true;
+			elapsedTime=millis()-startTime;
+		        seconds=Math.floor(elapsedTime/1000);
+		        minutes=Math.floor(seconds/60);
+		        seconds%=60;
+		}
 	}
 	else if(gameover)
 	{
-	textSize(80);
-	textAlign(CENTER, CENTER);
-	fill(255);
-	text('GAME OVER', width / 2, height / 2 -200);
-	textSize(40)
-	text('Restart (press R)', width / 2, height / 2 -50);
-	text('Menu (press M)', width/2, height/2+50);
+		textSize(80);
+		textAlign(CENTER,CENTER);
+		fill(255);
+		text('GAME OVER',width/2,height/2-200);
+		textSize(40);
+		text('Restart (press R)',width/2,height/2-50);
+		text('Menu (press M)',width/2,height/2+50);
 	}
 	else if(gamewin)
 	{
 		textSize(65);
-		textAlign(CENTER, CENTER);
+		textAlign(CENTER,CENTER);
 		fill(255);
-		text('Congratulations! You won the game!', width / 2, height / 2 -200);
+		text('Congratulations! You won the game!',width/2,height/2-200);
 		textSize(40);
-        text('Your time: ' + nf(minutes, 2) + ':' + nf(seconds, 2), width / 2, height/2 -120);
-		text('Restart (press R)', width / 2, height / 2);
-		text('Menu (press M)', width / 2, height / 2+100);
+	        text('Your time: '+nf(minutes,2)+':'+nf(seconds,2),width/2,height/2-120);
+		text('Restart (press R)',width/2,height/2);
+		text('Menu (press M)',width/2,height/2+100);
 	}
-  } 
+  }
 }
 
 function start()
@@ -227,125 +228,133 @@ function keyReleased()
   main_object.set_steering_angle(0);
   main_object.moving(false);
   main_object.moving_bw(false);
-  
 }
 
 function mousePressed() 
 {
-    for (let i = 0; i < sliders.length; i++)
+	if(dist(mouseX,mouseY,sliders[0].x,sliders[0].y)<30)
 	{
-        let d=dist(mouseX, mouseY, sliders[i].x, sliders[i].y);
-        if(d<20)
-		{
-          activeSlider = i;
-        }
-      }
-    }
-    function mouseReleased()
+          activeslider=0;
+	}
+    	else if(dist(mouseX,mouseY,sliders[1].x,sliders[1].y)<30)
 	{
-      activeSlider = -1;
-    }
-    function mouseDragged()
+          activeslider=1;
+	}
+	else if(dist(mouseX,mouseY,sliders[2].x,sliders[2].y)<30)
 	{
-      if (activeSlider!=-1)
-	  {
-        sliders[activeSlider].x = constrain(mouseX, 170, width - 170);
-        if (activeSlider==0)
-		{
-          asteroid_number = int(map(sliders[activeSlider].x, 170, width - 170, 1, 10));
-        }else if (activeSlider==1)
-		{
-          steering_sensibility = int(map(sliders[activeSlider].x, 170, width - 170, 1, 10));
-        }else if (activeSlider== 2)
-		{
-          speed = int(map(sliders[activeSlider].x, 170, width -170, 1, 10));
-        }
-      }
-    }
-    function drawSlider(slider)
+          activeslider=2;
+	}
+}
+    
+function mouseReleased()
+{
+	activeslider=-1;
+	cursor(); 
+}
+
+function mouseDragged()
+{
+	if(activeslider!=-1)
 	{
-      stroke(255);
-      strokeWeight(2);
-      line(170, slider.y, width - 170, slider.y);
-      fill(255);
-      ellipse(170, slider.y, 10, 10);
-      ellipse(width - 170, slider.y, 10, 10);
-      fill(255, 0, 0);
-      ellipse(slider.x, slider.y, 20, 20);
-    }
-	
+		sliders[activeslider].x=constrain(mouseX,170,width-170);
+	        if(activeslider==0)
+		{
+	          asteroid_number=int(map(sliders[activeslider].x,170,width-170,1,10));
+	        }
+		else if(activeslider==1)
+		{
+	          steering_sensibility = int(map(sliders[activeslider].x, 170, width - 170, 1, 10));
+	        }
+		else if(activeslider==2)
+		{
+	          speed=int(map(sliders[activeslider].x,170,width-170,1,10));
+	        }
+    	}
+}
+
+function drawSlider(slider)
+{
+    stroke(255);
+    strokeWeight(2);
+    line(170,slider.y,width-170,slider.y);
+    fill(255);
+    ellipse(170,slider.y,20,20);
+    ellipse(width-170,slider.y,20,20);
+    fill(255,0,0);
+    ellipse(slider.x,slider.y,30,30);
+}	
 	
 function keyPressed()
 {
 	if(gameover)
 	{
-	if(key=='r')
+		if(key=='r')
+		{
+			start();
+		}
+		if(key=='m')
+		{	
+			menu();
+		}
+	}
+	else if(inmenu)
 	{
-      start();
+		if(key=='s')
+		{	
+			start();
+		}
+		else if(key=='g')
+		{
+			gamesettings();
+		}
 	}
-	if(key=='m')
-	{	
-		menu();
-	}
-  }
-  else if(inmenu)
-  {
-	if(key=='s')
-	{	
-		start();
-	}
-	else if(key=='g')
+	else if(gamewin)
 	{
-		gamesettings();
+		if(key=='r')
+		{
+		  	start();
+		}
+		if(key=='m')
+		{	
+			menu();
+		}
 	}
-}
-  else if(gamewin)
-  {
-	if(key=='r')
+	else if(insettings)
 	{
-      start();
+		if(key=='b')
+		{
+			menu();
+		}
 	}
-	if(key=='m')
-	{	
-		menu();
-	}
-  }
-  else if(insettings)
-  {
-	if(key=='b')
+	else
 	{
-		menu();
-	}
-  }
-  else
-  {
-	 if(key==' ')
-	{
-		flying_object_2.push(new object_3_characteristics(main_object.position,main_object.direction));
-	}
-	if(keyCode==LEFT_ARROW)
-	{
-		main_object.set_steering_angle(-steering_sensibility/50);
-	}
-	if(keyCode==RIGHT_ARROW)
-	{
-		main_object.set_steering_angle(steering_sensibility/50);
-	}
-	if(keyCode==UP_ARROW)
-	{
-		main_object.moving(true);
-	}
-	if(keyCode==DOWN_ARROW)
-	{
-		main_object.moving_bw(true);
-	}
+		if(key==' ')
+		{
+			flying_object_2.push(new object_3_characteristics(main_object.position,main_object.direction));
+		}
+		if(keyCode==LEFT_ARROW)
+		{
+			main_object.set_steering_angle(-steering_sensibility/50);
+		}
+		if(keyCode==RIGHT_ARROW)
+		{
+			main_object.set_steering_angle(steering_sensibility/50);
+		}
+		if(keyCode==UP_ARROW)
+		{
+			main_object.moving(true);
+		}
+		if(keyCode==DOWN_ARROW)
+		{
+			main_object.moving_bw(true);
+		}
 	}
 }
 
 function object_1_characteristics()
 {
   this.position=createVector(width/2,height/2);
-  this.size=35;
+  this.size=55;
   this.direction=0;
   this.steering_angle=0;
   this.velocity=createVector(0,0);
@@ -386,7 +395,8 @@ function object_1_characteristics()
   }
   this.target=function(target_object)
   {
-    var distance=dist(this.position.x,this.position.y,target_object.position.x,target_object.position.y);               if(distance<target_object.size+this.size)
+    var distance=dist(this.position.x,this.position.y,target_object.position.x,target_object.position.y);
+	if(distance<target_object.size+this.size)
     {
       return true;
     }
@@ -454,7 +464,8 @@ function object_3_characteristics(initial_position,initial_direction)
   }
   this.target=function(target_object)
   {
-    var distance=dist(this.position.x,this.position.y,target_object.position.x,target_object.position.y);               if(distance<target_object.size)
+    var distance=dist(this.position.x,this.position.y,target_object.position.x,target_object.position.y);
+	if(distance<target_object.size)
     {
       return true;
     }
@@ -500,7 +511,7 @@ function object_2_characteristics(position,size)
   this.velocity.mult(random(0.5,10));
   for(var i=0;i<this.vertex_nr;i++)
   {
-     this.vertex_difference[i]=random(-this.size*0.35,this.size*0.35);
+    this.vertex_difference[i]=random(-this.size*0.35,this.size*0.35);
   }
   this.current_position=function()
   {
@@ -550,7 +561,6 @@ function object_2_characteristics(position,size)
     return new_object;
   }
 }
-
 </script>
 </body>
 </html>
